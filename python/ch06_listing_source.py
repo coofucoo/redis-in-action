@@ -41,7 +41,7 @@ def fetch_autocomplete_list(conn, user, prefix):
     candidates = conn.lrange('recent:' + user, 0, -1) #A
     matches = []
     for candidate in candidates:                      #B
-        if candidate.lower().startswith(prefix):      #B
+        if candidate.lower().startswith(prefix.lower()):      #B
             matches.append(candidate)                 #C
     return matches                                    #D
 # <end id="_1314_14473_8386"/>
@@ -245,7 +245,7 @@ def acquire_lock_with_timeout(
         if conn.setnx(lockname, identifier):            #B
             conn.expire(lockname, lock_timeout)         #B
             return identifier
-        elif not conn.ttl(lockname):                    #C
+        elif conn.ttl(lockname) < 0:                    #C
             conn.expire(lockname, lock_timeout)         #C
 
         time.sleep(.001)
